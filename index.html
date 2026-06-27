@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Predictor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url("https://png.pngtree.com/thumb_back/fh260/background/20190221/ourmid/pngtree-tech-line-background-simple-technology-business-image_22777.jpg") no-repeat center center/cover;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #ffffff;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        label {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input, select, button {
+            width: 350px; /* Adjusted to match the screenshot */
+            max-width: 400px;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            display: block;
+            text-align: center;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input, select {
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Salary Predictor</h1>
+
+    <label for="experience">Years of Experience:</label>
+    <input type="number" id="experience" placeholder="Enter years of experience">
+
+    <label for="jobRole">Job Role:</label>
+    <select id="jobRole">
+        <option value="Data Scientist">Data Scientist</option>
+        <option value="Software Engineer">Software Engineer</option>
+        <option value="Product Manager">Product Manager</option>
+        <option value="Analyst">Analyst</option>
+    </select>
+
+    <button onclick="predictSalary()">Predict Salary</button>
+
+    <div id="result"></div>
+
+    <script>
+        async function predictSalary() {
+            let experience = document.getElementById("experience").value;
+            let jobRole = document.getElementById("jobRole").value;
+            
+            if (experience === "") {
+                alert("Please enter years of experience.");
+                return;
+            }
+
+            let requestData = {
+                experience: parseFloat(experience),
+                jobRole: jobRole
+            };
+
+            try {
+                let response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(requestData)
+                });
+
+                let data = await response.json();
+
+                if (data.error) {
+    document.getElementById("result").innerHTML = "Error: " + data.error;
+} else {
+    document.getElementById("result").innerHTML = `Predicted Salary: ₹${data.predicted_salary.toLocaleString()}`;
+}
+
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("result").innerHTML = "Error connecting to server.";
+            }
+        }
+    </script>
+</body>
+</html>
